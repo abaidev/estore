@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+    
+    {% include 'slider_area_banner.html' with sliderTitle='product list' %}
+    
+    <!-- product list part start-->
+    <section class="product_list section_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="product_sidebar">
+                        <div class="single_sedebar">
+                            <form action="#">
+                                {% csrf_token %}
+                                <input type="text" name="search-kwargs" placeholder="Search keyword" class="search-product">
+                                <i class="ti-search"></i>
+                            </form>
+                        </div>
+                        <div class="single_sedebar">
+                            <div class="select_option">
+                                <div class="select_option_list">Category <i class="right fas fa-caret-down"></i> </div>
+                                <div class="select_option_dropdown">
+                                    {% for category in category_list %}
+                                        <p><a href="#" data-category-btn="{{ category.slug }}" class="cat-btn">{{ category.name }}</a></p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="single_sedebar">
+                            <div class="select_option">
+                                <div class="select_option_list">Type <i class="right fas fa-caret-down"></i> </div>
+                                <div class="select_option_dropdown">
+                                    <p><a href="#" data-gtype-btn="m" class="gtype-btn">Men's</a></p>
+                                    <p><a href="#" data-gtype-btn="w" class="gtype-btn">Women's</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="product_list">
+                        <div class="row">
+                            {% for product in all_products %}
+                                <div class="col-lg-6 col-sm-6" data-category="{{ product.category.slug }}" data-gtype="{{ product.gtype }}">
+                                    <div class="single_product_item">
+                                        {% for picture in product.productimage_set.all %}
+                                            {% if picture.main_img %}
+                                                <img src="{{ picture.image.url }}" alt="" class="img-fluid product-img-fluid">
+                                            {% endif %}
+                                        {% endfor %}
+                                        <h3><a href="{% url 'estore:product-detail' product.id %}" class="product-name">{{ product.name }}</a></h3>
+                                        <p>${{ product.price_final }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="load_more_btn text-center">
+                            <a href="#" class="btn_3">Load More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- product list part end-->
+
+    {% include 'client_review.html' %}
+
+    <style>
+        .product-img-fluid {
+            width: auto;
+            max-height: 320px;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+{% endblock %}

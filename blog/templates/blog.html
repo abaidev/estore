@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}E. Blog{% endblock %}
+{% block content %}
+
+{% include 'slider_area_banner.html' with sliderTitle='Blog' %}
+
+    <!--================Blog Area =================-->
+    <section class="blog_area section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mb-5 mb-lg-0">
+                    <div class="blog_left_sidebar">
+
+                        <!-- Blog Post List -->
+                        {% for post in post_list %}
+                            <article class="blog_item">
+                                <div class="blog_item_img">
+                                    {% for pic in post.postimage_set.all %}
+                                        {% if pic.main_img %}
+                                            <img class="card-img rounded-0" src="{{ pic.image.url }}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                    <a href="#" class="blog_item_date">
+                                        <h3>{{ post.date.date.day }}</h3>
+                                        <p>{{ post.date|date:"M" }}</p>
+                                    </a>
+                                </div>
+
+                                <div class="blog_details">
+                                    <a class="d-inline-block" href="{% url 'blog:post-detail' post.slug %}">
+                                        <h2>{{ post.title }}</h2>
+                                    </a>
+                                    <p>{{ post.content|slice:"150"|safe }}.</p>
+                                    <ul class="blog-info-link">
+                                        <li>
+                                            {% for post_tag in post.tags.all|slice:":6" %}
+                                                <a href="#">&nbsp;<i class="fa fa-tag"></i>{{ post_tag }}</a>
+                                            {% endfor %}
+                                        </li>
+                                        <li><a href="#"><i class="fa fa-comments"></i> {{ post.postcomment_set.all|length }} Comments</a></li>
+                                    </ul>
+                                </div>
+                            </article>
+                        {% endfor %}
+
+
+                        <nav class="blog-pagination justify-content-center d-flex">
+                            <ul class="pagination">
+
+                                <!-- Previous -->
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                                            <i class="ti-angle-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link"  aria-label="Previous">
+                                            {{ page_obj.previous_page_number }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a href="#" class="page-link" aria-label="Previous" onclick="event.preventDefault();">
+                                            <i class="ti-angle-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Current -->
+                                <li class="page-item active">
+                                    <a href="#" class="page-link" onclick="event.preventDefault();">{{ page_obj.number }}</a>
+                                </li>
+
+                                <!-- Next -->
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                                            {{ page_obj.next_page_number }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                                            <i class="ti-angle-right"></i>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a href="#" class="page-link" aria-label="Next"
+                                           onclick="event.preventDefault();">
+                                            <i class="ti-angle-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+
+                    </div>
+                </div>
+
+                {% include 'blog_aside.html' %}
+
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .blog_item_img .blog_item_date:hover {
+            background: rgba(250, 0, 60, .5);
+            -webkit-text-fill-color: #fff;
+        }
+        .blog_item_img .blog_item_date:hover * {
+            color: #ffffff;
+            -webkit-text-fill-color: #fff;
+        }
+    </style>
+
+{% endblock %}

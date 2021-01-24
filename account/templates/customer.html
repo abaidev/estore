@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="row">
+                    <div class="col-lg-3">{{ field.label }}</div>
+                    <div class="col-lg-3">
+                        {% if request.user.is_authenticated and field.label == 'Photo' %}
+                            <img src="{{ field.value.url }}" alt="">
+                            <input type="file" name="photo" accept="image/*" id="id_photo">
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-3" style="color: red">{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+
+            {% if request.user.is_authenticated %}
+                <input type="submit" value="update" name="update" class="btn btn-sm">
+                <p><a href="{% url 'account:profile-delete' %}" class="btn-sm btn-danger float-right">Delete account</a></p>
+            {% else %}
+                <input type="submit" value="register" name="submit" class="btn btn-sm">
+            {% endif %}
+        </form>
+
+    </div>
+<style>
+    a, a:hover {
+        color: black;
+    }
+</style>
+{% endblock %}
+

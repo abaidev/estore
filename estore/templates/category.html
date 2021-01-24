@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+
+    <main>
+
+        {% include 'slider_area_banner.html' with sliderTitle="Product Categories" %}
+
+        <!-- Latest Products Start -->
+        <section class="latest-product-area latest-padding">
+            <div class="container">
+                <div class="row product-btn d-flex justify-content-between">
+                        <div class="properties__button">
+                            <!--Nav Button  -->
+                            <nav>                                                                                                
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">All</a>
+                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">New</a>
+                                    {% for category in category_list %}
+                                        <a class="nav-item nav-link" id="nav-{{ category.slug }}-tab"
+                                           data-toggle="tab" href="#nav-{{ category.slug }}" role="tab"
+                                           aria-controls="nav-{{ category.slug }}" aria-selected="true">{{ category.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </nav>
+                            <!--End Nav Button  -->
+                        </div>
+                        <div class="select-this d-flex">
+                            <div class="featured">
+                                <span>Short by: </span>
+                            </div>
+                            <form action="#">
+                                <div class="select-itms">
+                                    <select name="select" id="select1">
+                                        <option value="">Featured</option>
+                                        <option value="">Featured A</option>
+                                        <option value="">Featured B</option>
+                                        <option value="">Featured C</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                </div>
+
+                <!-- Nav Card -->
+                <div class="tab-content" id="nav-tabContent">
+
+                    <!-- All Products -->
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="row">
+                            {% for product in all_products reversed %}
+                                <div class="col-xl-4 col-lg-4 col-md-6">
+                                    <div class="single-product mb-60">
+                                        <div class="product-img">
+
+                                            {% for picture in product.productimage_set.all %}
+                                                {% if picture.main_img %}
+                                                    <img src="{{ picture.image.url }}" alt="{{ product.name }}">
+                                                {% else %}
+                                                    <img src="{{ product.category.cover.url }}" alt="Cover">
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <div class="new-product">
+                                                {% with prod_date=product.date_recieved|date:"U" %}
+                                                    {% now "U" as current_date %}
+                                                    {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                                        <span>New</span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                        <div class="product-caption">
+                                            <div class="product-ratting">
+
+                                                {% for r in "x"|rjust:"5"|make_list %}
+                                                    {% if product.rating >= forloop.counter %}
+                                                        <i class="far fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star low-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </div>
+                                            <h4><a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a></h4>
+                                            <div class="price">
+                                                <ul>
+                                                    <li>${{ product.price_final }}</li>
+                                                    <li class="discount">${{ product.price_initial }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- New Products -->
+                    <div class="tab-pane fade show" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="row">
+                            {% for product in all_products %}
+                                {% now "U" as current_date %}
+                                {% with prod_date=product.date_recieved|date:"U" %}
+                                    {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                        <div class="col-xl-4 col-lg-4 col-md-6">
+                                            <div class="single-product mb-60">
+                                                <div class="product-img">
+
+                                                    {% for picture in product.productimage_set.all %}
+                                                        {% if picture.main_img %}
+                                                            <img src="{{ picture.image.url }}" alt="{{ product.name }}">
+                                                        {% else %}
+                                                            <img src="{{ product.category.cover.url }}" alt="Cover">
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    <div class="new-product">
+                                                        <span>New</span>
+                                                    </div>
+                                                </div>
+                                                <div class="product-caption">
+                                                    <div class="product-ratting">
+
+                                                        {% for r in "x"|rjust:"5"|make_list %}
+                                                            {% if product.rating >= forloop.counter %}
+                                                                <i class="far fa-star"></i>
+                                                            {% else %}
+                                                                <i class="far fa-star low-star"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+
+                                                    </div>
+                                                    <h4><a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a></h4>
+                                                    <div class="price">
+                                                        <ul>
+                                                            <li>${{ product.price_final }}</li>
+                                                            <li class="discount">${{ product.price_initial }}</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Products by category -->
+                    {% for category in category_list %}
+                        <div class="tab-pane fade show" id="nav-{{ category.slug }}"
+                             role="tabpanel" aria-labelledby="nav-{{ category.slug }}-tab">
+
+                            <div class="row">
+                                {% for product in category.product_set.all %}
+                                    <div class="col-xl-4 col-lg-4 col-md-6">
+                                        <div class="single-product mb-60">
+                                            <div class="product-img">
+
+                                                {% for picture in product.productimage_set.all %}
+                                                    {% if picture.main_img %}
+                                                        <img src="{{ picture.image.url }}" alt="{{ product.name }}">
+                                                    {% else %}
+                                                        <img src="{{ category.cover.url }}" alt="Cover">
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                <div class="new-product">
+                                                    {% with prod_date=product.date_recieved|date:"U" %}
+                                                        {% now "U" as current_date %}
+                                                        {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                                            <span>New</span>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+
+                                            </div>
+                                            <div class="product-caption">
+                                                <div class="product-ratting">
+
+                                                    {% for r in "x"|rjust:"5"|make_list %}
+                                                        {% if product.rating >= forloop.counter %}
+                                                            <i class="far fa-star"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star low-star"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </div>
+                                                <h4><a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a></h4>
+                                                <div class="price">
+                                                    <ul>
+                                                        <li>${{ product.price_final }}</li>
+                                                        <li class="discount">${{ product.price_initial }}</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- End Nav Card -->
+            </div>
+        </section>
+        <!-- Latest Products End -->
+
+        {% include 'latest_offer.html' %}
+        {% include 'shiping_screen.html' %}
+
+    </main>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+
+    <main>
+
+        {% include 'slider_area_banner.html' with sliderTitle="Collections" %}
+
+        <!-- Latest Products Start -->
+        <section class="latest-product-area latest-padding">
+            <div class="container">
+                <!-- Products by category -->
+                <div class="row">
+                    {% for collection in collections %}
+
+                        <div class="col-xl-4 col-lg-4 col-md-6">
+                            <div class="single-product mb-60">
+                                <div class="product-img">
+                                    <img src="{{ collection.banner.url }}" alt="{{ collection.name }}">
+
+                                    <div class="new-product">
+                                        {% with coll_date=collection.date_created|date:"U" %}
+                                            {% now "U" as current_date %}
+                                            {% if current_date|sub:coll_date|div:86400 <= 31 %}
+                                                <span>New</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+
+                                    <div class="collection-data">
+                                        <h2><a href="{% url 'estore:collection-detail' collection.slug %}">{{ collection.name }}</a></h2>
+                                        <p>{{ collection.summary }}</p>
+                                    </div>
+
+                                </div>
+                                <div class="product-caption">
+                                    <div class="price">
+                                        <ul>
+                                            <li>items: {{ collection.collection.all|length }}</li>
+                                            <li class="discount">discount: {{ collection.max_discount }}%</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <!-- Latest Products End -->
+
+        {% include 'latest_offer.html' %}
+        {% include 'shiping_screen.html' %}
+
+    </main>
+
+    <style>
+    .latest-product-area .single-product .product-caption .price ul li.discount{
+        text-decoration: none;
+    }
+    .collection-data h2 a {
+        color: initial;
+    }
+    </style>
+{% endblock %}

@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+
+    <main>
+        <!-- slider Area Start -->
+        <div class="slider-area ">
+            <!-- Mobile Menu -->
+            <div class="slider-active">
+                {% for collection in collections %}
+                    {% if collection.slider_collection %}
+                        <div class="single-slider slider-height">
+                            <div class="container">
+                                <div class="row d-flex align-items-center justify-content-between">
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 d-none d-md-block">
+                                        <div class="hero__img" data-animation="bounceIn" data-delay=".4s">
+                                            <img src="{{ collection.banner.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-8">
+                                        <div class="hero__caption">
+                                <span data-animation="fadeInRight"
+                                      data-delay=".4s">{{ collection.max_discount }}% Discount</span>
+                                            <h1 data-animation="fadeInRight"
+                                                data-delay=".6s">{{ collection.name }}</h1>
+
+                                            <p data-animation="fadeInRight"
+                                               data-delay=".8s">{{ collection.summary }}</p>
+                                            <!-- Hero-btn -->
+                                            <div class="hero__btn" data-animation="fadeInRight" data-delay="1s">
+                                                <a href="{% url 'estore:collection-detail' collection.slug %}"
+                                                   class="btn hero-btn">Shop Now</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <!-- slider Area End-->
+
+        <section class="latest-product-area padding py-5">
+            <div class="container">
+                <div class="row product-btn d-flex justify-content-between">
+                <div class="col-xl-4 col-lg-5 col-md-5">
+                        <div class="section-tittle mb-30">
+                            <h2>Latest products</h2>
+                        </div>
+                    </div>
+                    <div class="properties__button f-right">
+                        <!--Nav Button  -->
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
+                                   role="tab" aria-controls="nav-home" aria-selected="true">All</a>
+                                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
+                                   role="tab" aria-controls="nav-profile" aria-selected="false">New</a>
+                                {% for category in category_list %}
+                                    <a class="nav-item nav-link" id="nav-{{ category.slug }}-tab"
+                                       data-toggle="tab" href="#nav-{{ category.slug }}" role="tab"
+                                       aria-controls="nav-{{ category.slug }}" aria-selected="true">{{ category.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </nav>
+                        <!--End Nav Button  -->
+                    </div>
+                </div>
+
+                <!-- Nav Card -->
+                <div class="tab-content" id="nav-tabContent">
+
+                    <!-- All Products -->
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="row">
+                            {% for product in all_products reversed %}
+                                <div class="col-xl-4 col-lg-4 col-md-6">
+                                    <div class="single-product mb-60">
+                                        <div class="product-img">
+
+                                            {% for picture in product.productimage_set.all %}
+                                                {% if picture.main_img %}
+                                                    <img src="{{ picture.image.url }}" alt="{{ product.name }}">
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <div class="new-product">
+                                                {% with prod_date=product.date_recieved|date:"U" %}
+                                                    {% now "U" as current_date %}
+                                                    {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                                        <span>New</span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                        <div class="product-caption">
+                                            <div class="product-ratting">
+
+                                                {% for r in "x"|rjust:"5"|make_list %}
+                                                    {% if product.rating >= forloop.counter %}
+                                                        <i class="far fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star low-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            </div>
+                                            <h4>
+                                                <a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a>
+                                            </h4>
+                                            <div class="price">
+                                                <ul>
+                                                    <li>${{ product.price_final }}</li>
+                                                    <li class="discount">${{ product.price_initial }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- New Products -->
+                    <div class="tab-pane fade show" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="row">
+                            {% for product in all_products %}
+                                {% now "U" as current_date %}
+                                {% with prod_date=product.date_recieved|date:"U" %}
+                                    {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                        <div class="col-xl-4 col-lg-4 col-md-6">
+                                            <div class="single-product mb-60">
+                                                <div class="product-img">
+
+                                                    {% for picture in product.productimage_set.all %}
+                                                        {% if picture.main_img %}
+                                                            <img src="{{ picture.image.url }}" alt="{{ product.name }}">
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    <div class="new-product">
+                                                        <span>New</span>
+                                                    </div>
+                                                </div>
+                                                <div class="product-caption">
+                                                    <div class="product-ratting">
+
+                                                        {% for r in "x"|rjust:"5"|make_list %}
+                                                            {% if product.rating >= forloop.counter %}
+                                                                <i class="far fa-star"></i>
+                                                            {% else %}
+                                                                <i class="far fa-star low-star"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+
+                                                    </div>
+                                                    <h4>
+                                                        <a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a>
+                                                    </h4>
+                                                    <div class="price">
+                                                        <ul>
+                                                            <li>${{ product.price_final }}</li>
+                                                            <li class="discount">${{ product.price_initial }}</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Products by category -->
+                    {% for category in category_list %}
+                        <div class="tab-pane fade show" id="nav-{{ category.slug }}"
+                             role="tabpanel" aria-labelledby="nav-{{ category.slug }}-tab">
+
+                            <div class="row">
+                                {% for product in category.product_set.all %}
+                                    <div class="col-xl-4 col-lg-4 col-md-6">
+                                        <div class="single-product mb-60">
+                                            <div class="product-img">
+
+                                                {% for picture in product.productimage_set.all %}
+                                                    {% if picture.main_img %}
+                                                        <img src="{{ picture.image.url }}" alt="{{ product.name }}">
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                <div class="new-product">
+                                                    {% with prod_date=product.date_recieved|date:"U" %}
+                                                        {% now "U" as current_date %}
+                                                        {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                                            <span>New</span>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+
+                                            </div>
+                                            <div class="product-caption">
+                                                <div class="product-ratting">
+
+                                                    {% for r in "x"|rjust:"5"|make_list %}
+                                                        {% if product.rating >= forloop.counter %}
+                                                            <i class="far fa-star"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star low-star"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </div>
+                                                <h4>
+                                                    <a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a>
+                                                </h4>
+                                                <div class="price">
+                                                    <ul>
+                                                        <li>${{ product.price_final }}</li>
+                                                        <li class="discount">${{ product.price_initial }}</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- End Nav Card -->
+            </div>
+        </section>
+
+        <!-- Category Area Start-->
+        <section class="category-area section-padding30 pt-5">
+            <div class="container-fluid">
+                <!-- Section Tittle -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="section-tittle text-center mb-85">
+                            <h2>Shop by Category</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for collection in collections %}
+                        {% if not collection.best_of_month and not collection.slider_collection and forloop.counter|sub:"3" <= 2 %}
+                            <div class="col-xl-4 col-lg-6">
+                                <div class="single-category mb-30">
+                                    <div class="category-img">
+                                        <img src="{{ collection.banner.url }}" alt="">
+                                        <div class="category-caption">
+                                            <h2>{{ collection.name }}</h2>
+                                            <span class="best"><a href="{% url 'estore:collection-detail' collection.slug %}">Best New Deals</a></span>
+                                            <span class="collection">{{ collection.summary }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <!-- Category Area End-->
+
+        <!-- Best Product Start -->
+        <div class="best-product-area lf-padding" >
+           <div class="product-wrapper bg-height" style="background-image: url('../static/img/categori/card.png')">
+                <div class="container position-relative">
+                    <div class="row justify-content-between align-items-end">
+                        <div class="product-man position-absolute  d-none d-lg-block">
+                            <img src="{% static 'img/categori/card-man.png' %}" alt="">
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 d-none d-lg-block">
+                            <div class="vertical-text">
+                                <span>Manz</span>
+                            </div>
+                        </div>
+                        <div class="col-xl-8 col-lg-8">
+                            <div class="best-product-caption">
+                                <h2>Find The Best Product<br> from Our Shop</h2>
+                                <p>Designers who are interesten creating state ofthe.</p>
+                                <a href="{% url 'estore:product-list' %}" class="black-btn">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+           </div>
+           <!-- Shape -->
+           <div class="shape bounce-animate d-none d-md-block">
+               <img src="{% static 'img/categori/card-shape.png' %}" alt="">
+           </div>
+        </div>
+        <!-- Best Product End-->
+
+        <!-- Best Collection Start -->
+        <div class="best-collection-area section-padding2">
+            <div class="container">
+                <div class="row ">
+                    {% for collection in collections %}
+                        {% if collection.best_of_month %}
+
+                            <div class="col-xl-12 col-lg-12 d-none d-lg-block">
+                                <div class="best-mid-img mb-30 best-coll-par">
+                                    <div class="best-left-cap best-coll-data">
+                                        <h2>{{ collection.name }}</h2>
+                                        <p>{{ collection.summary }}</p>
+                                        <a href="{% url 'estore:collection-detail' collection.slug %}"
+                                           class="btn shop1-btn">Shop Now</a>
+                                    </div>
+                                    <img src="{{ collection.banner.url }}" alt="">
+                                </div>
+                            </div>
+
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        <!-- Best Collection End -->
+
+        {% include 'latest_offer.html' %}
+        {% include 'shiping_screen.html' %}
+
+    </main>
+    <style>
+    .best-coll-par {
+        position: relative;
+    }
+    .best-coll-par img {
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+    }
+    .best-coll-data {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30%;
+    }
+    </style>
+{% endblock %}

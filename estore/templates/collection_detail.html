@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+
+    <main>
+
+        {% include 'slider_area_banner.html' with sliderTitle=collection.name %}
+
+        <!-- Latest Products Start -->
+        <section class="latest-product-area latest-padding">
+            <div class="container">
+                <!-- Products by category -->
+                <div class="row">
+                    {% for product in collection.collection.all %}
+
+                        <div class="col-xl-4 col-lg-4 col-md-6">
+                            <div class="single-product mb-60">
+                                <div class="product-img">
+                                    {% for pic in product.productimage_set.all %}
+                                        {% if pic.main_img %}
+                                            <img src="{{ pic.image.url }}" alt="{{ product.name }}">
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <div class="new-product">
+                                        {% with prod_date=product.date_recieved|date:"U" %}
+                                            {% now "U" as current_date %}
+                                            {% if current_date|sub:prod_date|div:86400 <= 31 %}
+                                                <span>New</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+
+                                    <div class="collection-data">
+                                        <h2><a href="{% url 'estore:product-detail' product.id %}">{{ product.name }}</a></h2>
+                                        <p>{{ product.description|safe|slice:"100" }}</p>
+                                        <div class="hero__btn" data-animation="fadeInRight" data-delay="1s">
+                                            <a href="{% url 'estore:product-detail' product.id %}" class="btn hero-btn">Shop Now</a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="product-caption">
+                                    <div class="price">
+                                        <ul>
+                                            <li>${{ product.price_final }}</li>
+                                            <li class="discount">${{ product.price_initial }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <!-- Latest Products End -->
+
+        {% include 'latest_offer.html' %}
+        {% include 'shiping_screen.html' %}
+
+    </main>
+
+    <style>
+    .collection-data h2 a {
+        color: initial;
+    }
+    </style>
+{% endblock %}

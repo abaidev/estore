@@ -1,0 +1,124 @@
+{% load static %}
+{% load mathfilters %}
+
+<div class="col-lg-4">
+    <div class="blog_right_sidebar">
+
+        <!--================ Blog Search Form =================-->
+        <aside class="single_sidebar_widget search_widget">
+            <form action="" method="get">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder='Search Keyword'
+                            onfocus="this.placeholder = ''"
+                            onblur="this.placeholder = 'Search Keyword'">
+                        <div class="input-group-append">
+                            <button class="btns" type="button"><i class="ti-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
+                    type="submit">Search</button>
+            </form>
+        </aside>
+
+        <!--================ Blog Category =================-->
+        <aside class="single_sidebar_widget post_category_widget">
+            <h4 class="widget_title">Category</h4>
+            <ul class="list cat-list">
+                {% for category in category_list %}
+                    <li>
+                        <a href="{% url 'blog:post-category-detail' category.slug %}" class="d-flex">
+                            <p>{{ category.name }}</p>
+                            <p>({{ category.post_set.all|length }})</p>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!--================ Blog Recent Post =================-->
+        <aside class="single_sidebar_widget popular_post_widget">
+            <h3 class="widget_title">Recent Post</h3>
+            {% for post in recent_posts %}
+                <div class="media post_item">
+                    {% for pic in post.postimage_set.all %}
+                        {% if pic.main_img %}
+                            <img src="{{ pic.image.url }}" alt="Picture" width="80" height="auto">
+                        {% endif %}
+                    {% endfor %}
+                    <div class="media-body">
+                        <a href="single-blog.html">
+                            <h3>{{ post.title|slice:":25" }}</h3>
+                        </a>
+                        <p>{{ post.date|date }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </aside>
+
+        <!--================ Blog Tags Cloud =================-->
+        <aside class="single_sidebar_widget tag_cloud_widget">
+            <h4 class="widget_title">Tag Clouds</h4>
+            <ul class="list">
+                {% for tag in tags_list|slice:":15" %}
+                    <li>
+                        <a href="#">{{ tag.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!--================ Blog Instagram feed =================-->
+        <aside class="single_sidebar_widget instagram_feeds">
+            <h4 class="widget_title">Instagram Feeds</h4>
+            <ul class="instagram_row flex-wrap">
+                <li>
+                    <a href="#">
+                        <img class="img-fluid" src="/static/img/post/post_5.png" alt="">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="img-fluid" src="/static/img/post/post_6.png" alt="">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="img-fluid" src="/static/img/post/post_7.png" alt="">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="img-fluid" src="/static/img/post/post_8.png" alt="">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="img-fluid" src="/static/img/post/post_9.png" alt="">
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img class="img-fluid" src="/static/img/post/post_10.png" alt="">
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!--================ Blog Newsletter subscribe =================-->
+        <aside class="single_sidebar_widget newsletter_widget">
+            <h4 class="widget_title">Newsletter</h4>
+
+            <form action="#">
+                <div class="form-group">
+                    <input type="email" class="form-control" onfocus="this.placeholder = ''"
+                        onblur="this.placeholder = 'Enter email'" placeholder='Enter email' required>
+                </div>
+                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
+                    type="submit">Subscribe</button>
+            </form>
+        </aside>
+    </div>
+</div>

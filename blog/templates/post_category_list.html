@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% include 'slider_area_banner.html' with sliderTitle="Post Categories" %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mb-5 mb-lg-0">
+                <div class="blog_left_sidebar">
+                    {% for category in category_list %}
+                        <article class="blog_item">
+                            <div class="blog_item_img">
+                                <img class="card-img rounded-0" src="{{ category.cover.url }}" alt="">
+                            </div>
+
+                            <div class="blog_details">
+                                <a class="d-inline-block" href="{% url 'blog:post-category-detail' category.slug %}">
+                                    <h2>{{ category.name }}</h2>
+                                </a>
+                                <p>{{ category.post_set.all|length }} items</p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% include 'blog_aside.html' %}
+        </div>
+    </div>
+
+{% endblock %}
